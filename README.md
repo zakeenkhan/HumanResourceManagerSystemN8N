@@ -7,9 +7,17 @@
 ## 📸 System Screenshots - Complete Visual Overview
 
 ### **Main System Workflow**
-![Full HR System](Full HR System.JPG)
+![alt text](FullHRSystem.JPG)
+![AgentPrompt](AgentPrompt.JPG)
 *Complete HR Manager System showing all integrated automation processes*
+![Data Storage](DataSave.JPG)
+*Candidate data automatically stored and organized*
 
+![Approval Process](Approval.JPG)
+*Manager approval workflow with one-click actions*
+
+![Rejection Handling](Rejection.JPG)
+*Professional rejection email automation*
 ### **Resume Analysis & Recruitment**
 ![Resume Analysis](Resume Analysis HR.JPG)
 *AI-powered resume screening and candidate evaluation*
@@ -17,8 +25,18 @@
 ![SellectionInterview](SellectionInterview.JPG)
 *Candidate selection and interview scheduling process*
 
-![AgentPrompt](AgentPrompt.JPG)
+![OnboardingMessage](OnboardingMessage.JPG)
+*Welcome message and onboarding communication*
 *AI agent configuration for resume analysis*
+![LeaveForm](LeaveForm.JPG)
+![DataSave](DataSave.JPG)
+*Automatic data storage in Google Sheets*
+
+![Approval](Approval.JPG)
+*Manager approval workflow*
+
+![Rejection](Rejection.JPG)
+*Professional rejection email automation*
 
 ### **Interview Scheduling**
 ![Interview Scheduling](Interview Scheduling.JPG)
@@ -31,11 +49,10 @@
 ![On boarding System](On boarding System.JPG)
 *Complete employee onboarding automation*
 
-![OnboardingMessage](OnboardingMessage.JPG)
-*Welcome message and onboarding communication*
+
 
 ### **Leave Management System**
-![LeaveForm](LeaveForm.JPG)
+
 *Employee leave request form*
 
 ![leave form data](leave form data.JPG)
@@ -43,18 +60,6 @@
 
 ![sick leave](sick leave.JPG)
 *Sick leave request handling*
-
-### **Data Management & Communication**
-![DataSave](DataSave.JPG)
-*Automatic data storage in Google Sheets*
-
-![Approval](Approval.JPG)
-*Manager approval workflow*
-
-![Rejection](Rejection.JPG)
-*Professional rejection email automation*
-
----
 
 ## 🚀 Step-by-Step System Explanation
 
@@ -225,14 +230,7 @@
 
 ## 📱 Screenshots as Proof
 
-![Data Storage](DataSave.JPG)
-*Candidate data automatically stored and organized*
 
-![Approval Process](Approval.JPG)
-*Manager approval workflow with one-click actions*
-
-![Rejection Handling](Rejection.JPG)
-*Professional rejection email automation*
 
 ---
 
