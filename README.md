@@ -10,8 +10,8 @@
 ![alt text](FullHRSystem.JPG)
 ![alt text](OnboardingSystem.JPG)
 ![alt text](ResumeAnalysisHR.JPG)
-![AgentPrompt](AgentPrompt.JPG)
 ![alt text](InterviewScheduling.JPG)
+![AgentPrompt](AgentPrompt.JPG)
 *Complete HR Manager System showing all integrated automation processes*
 ![Data Storage](DataSave.JPG)
 *Candidate data automatically stored and organized*
