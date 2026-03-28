@@ -1,0 +1,1830 @@
+{
+  "name": "Resume analysis agent",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        448,
+        320
+      ],
+      "id": "30ada0fd-cf67-4cd9-be1e-1097c41e1de4",
+      "name": "Download resume",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iHvFAClLk9k4IXec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "attachment_0",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "12npSsyIZwuLStkXF18k0FBqKuvEgXzTD",
+          "mode": "list",
+          "cachedResultName": "Resume Analysis",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/12npSsyIZwuLStkXF18k0FBqKuvEgXzTD"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        224,
+        320
+      ],
+      "id": "6f357e84-faf9-446a-8af7-e75e49d03a43",
+      "name": "Upload Resume",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iHvFAClLk9k4IXec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        320
+      ],
+      "id": "cc2c57e2-413b-4d85-a7a6-987285bc4638",
+      "name": "Convert PDF to JSON"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e443b9fe-3a6b-4ecd-bcee-574f5657fafb",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        320
+      ],
+      "id": "59694324-5eef-4b54-ae29-00509b74d5bb",
+      "name": "Clean data"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        320
+      ],
+      "id": "dd2f334c-5523-4dba-9060-35591ce2e43b",
+      "name": "Resume Sending",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZkoCBOV0fUnVXDRF",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        528
+      ],
+      "id": "6789dc83-039c-4f68-b5d7-226b7c983ae0",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Mo5SW1ZfjuAjJE7w",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Role : You are HR recruiter at Invogue Solution\n\nHiring position : Looking for Software Engineer Role\nAnalyze this candidate's resume and summarize:\n\nName\nEmail\nnumber\nMain Skills and role\nYears of Experience\nprojects if mentions (A short 2 lines summary) \nFit Score ( 0 out of 10) for Software Enginnering role\nbased on:\n9–10: Excellent fit (strong shortlist)\n8–10: Good fit (shortlist)\n7–10: Average (borderline)\n6-10: Normal (Maybe good maybe not) \nBelow 6 Reject\nDecision Rule: If score >= 6, \"shortlist\"; if < 6, \"reject\"\nShort Summary overall Resume.\n\nResume Content:\n{{ $json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1056,
+        320
+      ],
+      "id": "968859e7-0ec2-4fe8-9cd3-8020722b58bb",
+      "name": "Human Resource Manager Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ce1bd7c2-d15f-4e72-bc2b-144ea4508880",
+              "leftValue": "={{ $json.fitScore }}",
+              "rightValue": 6,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        48,
+        704
+      ],
+      "id": "34d87adc-f2a0-4edd-a82b-1aca83bf4e02",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst analysisText = item.output || item.text || item.analysisText || item.message || item.response || Object.values(item).find(v => typeof v === 'string' && v.length > 100);\n\nfunction parseResumeAnalysis(text) {\n  const result = {\n    name: null,\n    email: null,\n    phone: null,       // <-- added\n    skills: [],\n    experience: [],\n    projects: [],\n    fitScore: null,\n    status: null,\n    summary: null\n  };\n\n  // --- NAME ---\n  const nameMatch = text.match(/\\*\\*Name:\\*\\*\\s*(.+)/i);\n  if (nameMatch) result.name = nameMatch[1].trim();\n\n  // --- EMAIL ---\n  const emailMatch = text.match(/[\\w.-]+@[\\w.-]+\\.\\w+/);\n  if (emailMatch) result.email = emailMatch[0].trim();\n\n  // --- PHONE ---\n  const phoneMatch = text.match(/(\\+?[\\d\\s\\-\\(\\)]{7,15}\\d)/);\n  if (phoneMatch) result.phone = phoneMatch[1].trim();\n\n  // --- SKILLS ---\n  const skillsMatch = text.match(/\\*\\*Main Skills[:\\*\\s]*\\*?\\s*([\\s\\S]*?)(?=\\*\\*Years|\\*\\*Experience|\\n\\n\\*\\*)/i);\n  if (skillsMatch) {\n    const rawSkills = skillsMatch[1].replace(/\\*\\*/g, '').replace(/\\*\\s+\\*\\*Role:\\*\\*[^\\n]*/g, '');\n    result.skills = rawSkills\n      .split(/[,\\n]/)\n      .map(s => s.replace(/^\\s*[\\*\\-\\(]\\s*/, '').replace(/\\)\\s*$/, '').trim())\n      .filter(s => s.length > 1 && !/^role$/i.test(s));\n  }\n\n  // --- EXPERIENCE ---\n  const expSection = text.match(/\\*\\*Years of Experience:\\*\\*([\\s\\S]*?)(?=\\*\\*Projects)/i);\n  if (expSection) {\n    const expLines = expSection[1].match(/\\*\\s+\\*\\*(.+?):\\*\\*\\s*(.+)/g) || [];\n    result.experience = expLines.map(line => {\n      const m = line.match(/\\*\\s+\\*\\*(.+?):\\*\\*\\s*(.+)/);\n      return m ? { type: m[1].trim(), detail: m[2].trim() } : null;\n    }).filter(Boolean);\n\n    if (result.experience.length === 0) {\n      result.experience = expSection[1]\n        .split('\\n')\n        .map(l => l.replace(/\\*+/g, '').trim())\n        .filter(l => l.length > 0);\n    }\n  }\n\n  // --- PROJECTS ---\n  const projectsSection = text.match(/\\*\\*Projects[\\s\\S]*?:\\*\\*([\\s\\S]*?)(?=\\*\\*Fit Score|\\*\\*Fit)/i);\n  if (projectsSection) {\n    const projectMatches = projectsSection[1].matchAll(/\\*\\s+\\*\\*(.+?):\\*\\*\\s*([\\s\\S]*?)(?=\\n\\s*\\*\\s+\\*\\*|\\n\\n|$)/g);\n    for (const match of projectMatches) {\n      result.projects.push({\n        name: match[1].trim(),\n        description: match[2].replace(/\\n/g, ' ').trim()\n      });\n    }\n  }\n\n  // --- FIT SCORE ---\n  const fitPatterns = [\n    /\\*\\*(\\d+(?:\\.\\d+)?)\\s*\\/\\s*10\\*\\*/,\n    /\\*\\*Fit Score[^:]*:\\*\\*\\s*(\\d+(?:\\.\\d+)?)/i,\n    /Fit Score[^:]*:\\s*\\*?\\*?(\\d+(?:\\.\\d+)?)/i,\n    /(\\d+(?:\\.\\d+)?)\\s*\\/\\s*10/\n  ];\n  for (const pattern of fitPatterns) {\n    const m = text.match(pattern);\n    if (m) { result.fitScore = parseFloat(m[1]); break; }\n  }\n\n  // --- STATUS ---\n  if (result.fitScore !== null && !isNaN(result.fitScore)) {\n    if (result.fitScore >= 8)      result.status = 'Strong Candidate';\n    else if (result.fitScore >= 6) result.status = 'Potential Candidate';\n    else                           result.status = 'Not Recommended';\n  } else {\n    result.status = 'Unable to Determine';\n  }\n\n  // --- SUMMARY ---\n  const summaryMatch = text.match(/\\*\\*Short Summary[^:]*:\\*\\*\\s*([\\s\\S]+)/i);\n  if (summaryMatch) result.summary = summaryMatch[1].replace(/\\*\\*/g, '').trim();\n\n  return result;\n}\n\nconst extracted = parseResumeAnalysis(analysisText);\nreturn [{ json: extracted }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        320
+      ],
+      "id": "1d2d6e0e-dc37-42a0-ba5a-24fa7d7cc839",
+      "name": "Revieving"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ",
+          "mode": "list",
+          "cachedResultName": "Shortlist candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Skills": "={{ $json.skills }}",
+            "Experience": "={{ $json.experience }}",
+            "Name": "={{ $json.name }}",
+            "Email": "={{ $json.email }}",
+            "phone": "={{ $json.phone }}",
+            "score": "={{ $json.fitScore }}",
+            "Status": "={{ $json.status }}",
+            "Summary": "={{ $json.summary }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Skills",
+              "displayName": "Skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Experience",
+              "displayName": "Experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        560
+      ],
+      "id": "c795340b-893a-4538-b5b6-d5df3b137d30",
+      "name": "Data Stored",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FLmCK0EePNj51lDL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "={{ $('Resume Sending').item.json.headers.subject }}",
+        "emailType": "text",
+        "message": "=Dear {{ $('Resume Sending').item.json.to.value[0].name }},\n\nThank you for sharing your resume with us.\n\nWe appreciate your interest in joining our team. After reviewing your application, we are pleased to inform you that you have been shortlisted for the next stage of the hiring process.\n\nOur team is currently in the process of reviewing all candidates. Once this phase is complete, we will get in touch with you to share the details regarding your interview date and time.\n\nThank you for your patience and interest in Invoge Solution. We look forward to speaking with you soon.\n\nBest regards,\nHR Team\nInvoge Solution",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        560
+      ],
+      "id": "0d6dd85f-adc5-4e55-a80d-7b428d0247e8",
+      "name": "Mail send Candicate",
+      "webhookId": "12301783-ee80-44f4-b5a1-3dabd9d2f3f4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZkoCBOV0fUnVXDRF",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "={{ $('Resume Sending').item.json.headers.subject }}",
+        "emailType": "text",
+        "message": "=Dear {{ $json.name }},\n\nThank you for taking the time to apply to Invoge Solution and for sharing your resume with us.\n\nWe truly appreciate your interest in joining our team. After careful consideration, we regret to inform you that we will not be moving forward with your application at this time.\n\nThis was not an easy decision, as we received a large number of strong applications. We encourage you to apply again in the future for roles that match your skills and experience.\n\nWe wish you all the best in your job search and future endeavors.\n\nKind regards,\nHR Team\nInvoge Solution ",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        784
+      ],
+      "id": "2cc2cd12-649d-4d6b-95c7-1d53e2fa0f5d",
+      "name": "Rejection Message",
+      "webhookId": "b0210eaa-0da0-451d-a8cc-bebc15a60f31",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZkoCBOV0fUnVXDRF",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ",
+          "mode": "list",
+          "cachedResultName": "Shortlist candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ/edit#gid=0"
+        },
+        "event": "rowUpdate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        16,
+        976
+      ],
+      "id": "b2527efe-05c6-4c5c-86f9-b20c5e1c367f",
+      "name": "shortlisted candicate data",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "wGBOvLSmL7zJ8hKG",
+          "name": "Google Sheets Trigger OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ",
+          "mode": "list",
+          "cachedResultName": "Shortlist candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "={{ $json.Status }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        288,
+        976
+      ],
+      "id": "dc842dcb-d32f-4d8a-8da3-c419f5ffdc40",
+      "name": "Selecting High score",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FLmCK0EePNj51lDL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an HR assistant writing a professional interview confirmation email to a candidate.\n\nUse the details provided below to create a short, polite, and well-formatted email.\n\nCandidate details:\n- Full Name: {{ $json.Name }}\n- Recommended Role Title: Full Stack Developer\n- Interview Date & Time: 1 April 2026\n- Conducted by: Sabir Assistant (HR Recruitment Team)\n\nGuidelines for writing:\n1. Begin with a warm greeting using the candidate’s first name.\n2. Clearly confirm that the interview has been scheduled — no need to ask for time preferences.\n3. Mention the role and department briefly.\n4. Politely ask the candidate to ensure they’re available at the given time.\n5. Keep the tone professional but friendly (between 120–160 words).\n6. Sign off as Sabir Assistant – HR Recruitment Team”.\n7. Do NOT include any placeholders, markdown, or formatting characters like `*` or `#`.\n\nOutput Format:\n- Subject: A short, professional subject line confirming the interview.\n- Body: A concise, neatly written email body.\n\nExample Output:\nSubject: Interview Confirmation – Software Developer Role\n\nBody:\nDear Zakeen Khan,\n\nWe are pleased to confirm your interview for the Operations Manager position in our Operations Department.\n\nThe meeting is scheduled for 1 April 2026 at 5:00 PM (local time).\nPlease ensure your availability and check your email for the meeting link or calendar invitation.\n\nBest regards,\nSabir Assistant\nHR Recruitment Team",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        528,
+        976
+      ],
+      "id": "3b8c8fc8-11bd-4a75-8311-d7d12129f02d",
+      "name": "HR Recruitment Team"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Final working subject/body splitter for AI Agent output in n8n\nreturn [\n{\njson: (() => {\nconst data = $json;\nconst aiOutput = data.aiEmailContent || data.output || \"\";\n\n// Convert escaped newlines (\\\\n) into real ones\nconst normalized = aiOutput.replace(/\\\\n/g, \"\\n\").trim();\n\n// --- Extract the subject (after \"Subject:\" until a line break or \"Body:\")\nconst subjectMatch = normalized.match(/Subject\\s*:\\s*(.*?)(?:\\n|$)/i);\nconst subject = subjectMatch ? subjectMatch[1].trim() : \"Interview Invitation\";\n\n// --- Extract everything after \"Body:\" as the email body\nlet body = \"\";\nconst bodyMatch = normalized.match(/Body\\s*:\\s*([\\s\\S]*)/i);\nif (bodyMatch && bodyMatch[1]) {\nbody = bodyMatch[1].trim();\n} else {\n\n// Fallback: everything after the subject if \"Body:\" not found\nconst subjectEndIndex = subjectMatch ? normalized.indexOf(subjectMatch[0]) + subjectMatch[0].length :\n0;\nbody = normalized.slice(subjectEndIndex).trim();\n}\n\n// --- Clean up line breaks for better readability\nbody = body.replace(/\\n{2,}/g, \"\\n\\n\");\n\n// --- Return structured data\nreturn {\ncandidateName: data[\"Candidate Name\"],\nrecommendedRoleTitle: data[\"Recommended Role Title\"],\nsubject,\nbody,\n};\n})(),\n},\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        976
+      ],
+      "id": "b60c7068-2b27-4414-a771-a8e1591f5b5b",
+      "name": "Convert into Email form"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Selecting High score').item.json.Email }}",
+        "subject": "={{ $json.subject }}",
+        "emailType": "text",
+        "message": "={{ $json.body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1088,
+        976
+      ],
+      "id": "de7d2bd2-6cc9-478f-a0a6-a03edcc4aecd",
+      "name": "Send a message",
+      "webhookId": "b712ce7c-f393-4952-ba95-92012bd1a310",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZkoCBOV0fUnVXDRF",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ",
+          "mode": "list",
+          "cachedResultName": "Shortlist candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YqZER2UGIQmhUSM4YxtoPFaM9rzepx6U9g06R4g0UfQ/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Name",
+              "lookupValue": "={{ $('shortlisted candicate data').item.json.Name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1296,
+        976
+      ],
+      "id": "b8e67c74-395e-44cb-8406-1396085c4f9a",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FLmCK0EePNj51lDL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "zakeenkhann@gmail.com",
+          "mode": "list",
+          "cachedResultName": "zakeenkhann@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1504,
+        976
+      ],
+      "id": "e1db5d47-6eeb-4faf-8db8-157859fac67c",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "kt5AcvzrzUU7pQ7D",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        528,
+        1184
+      ],
+      "id": "1a79cd62-db47-4a8b-9f90-3c80576cff74",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Mo5SW1ZfjuAjJE7w",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0A7E2LJ7EZ",
+          "mode": "list",
+          "cachedResultName": "all-zakeen"
+        },
+        "text": "=",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        1712,
+        976
+      ],
+      "id": "d6e9acd5-b1cc-4bb1-8dd1-76cf97bd7bab",
+      "name": "Inform Manager",
+      "webhookId": "6de3bf0e-d55f-4e28-bc21-4d5d1e68e1fe",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "Uxhptjz8lyuqgQTA",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "WELCOME TO THE COMPANY",
+        "formDescription": "Fill this form to be a Part of a out Comapny",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "John"
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "john@gmail.com"
+            },
+            {
+              "fieldLabel": "Phone",
+              "fieldType": "number",
+              "placeholder": "+9234396553"
+            },
+            {
+              "fieldLabel": "Role",
+              "placeholder": "Developer, AI Engineer, etc"
+            },
+            {
+              "fieldLabel": "Joining date",
+              "placeholder": "15 Nov 2025"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -16,
+        1392
+      ],
+      "id": "58c6cfb3-0da1-4a0c-95c2-1c701dba9344",
+      "name": "Employee Submitted data",
+      "webhookId": "713157dc-5876-49c6-a882-b1081d3c93d4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a4b6de72-0537-427e-b13a-ed16cc8ec9b7",
+              "name": "Name",
+              "value": "={{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "5a79e43e-2632-4210-8f36-30cb8ebba1b5",
+              "name": "Email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "4dfaa07c-fafc-43fd-8b33-94215897c311",
+              "name": "Phone",
+              "value": "={{ $json.Phone }}",
+              "type": "number"
+            },
+            {
+              "id": "d088ea71-0dd8-43a3-b5b2-7933b5317cd0",
+              "name": "Role",
+              "value": "={{ $json.Role }}",
+              "type": "string"
+            },
+            {
+              "id": "37f2dfbc-531e-4a17-af48-b9d1d8c5a2c4",
+              "name": "Joining date",
+              "value": "={{ $json['Joining date'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        1392
+      ],
+      "id": "c5727ad0-15ff-451f-ba23-d3a1dfeed13c",
+      "name": "Clean Data"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1DTEI2__06tIFnnzI5Kpe376QmLTciZIX_Bpaz2uZQNI",
+          "mode": "list",
+          "cachedResultName": "AI Automation",
+          "cachedResultUrl": "https://docs.google.com/document/d/1DTEI2__06tIFnnzI5Kpe376QmLTciZIX_Bpaz2uZQNI/edit?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        400,
+        1392
+      ],
+      "id": "5f757b45-87d1-4b38-b69b-32cb92ab5987",
+      "name": "Company Rules pdf",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iHvFAClLk9k4IXec",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Welcome to the Team 🎉",
+        "emailType": "text",
+        "message": "=Hi {{ $json.Name }},\n\nWelcome aboard! We’re really excited to have you join us at Tartu.\n\nStarting a new role is always a big step, and we’re here to make your transition as smooth as possible. Over the next few days, you’ll get to know your team, explore our tools and processes, and learn more about how everything works.\n\nHere are a few things to get you started:\n\nYour onboarding schedule and training details will be shared shortly\nPlease make sure you have access to your email and required systems\nFeel free to reach out anytime if you have questions or need help\n\nWe believe you’ll be a great addition to the team, and we’re looking forward to seeing the impact you’ll make.\n\nOnce again, welcome to Tartu. We’re glad to have you with us.\n\nBest regards,\nZakeen khan\nHR Manager\nTartu Pvt.Ltd ",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        1392
+      ],
+      "id": "3e21b1df-93b2-4dac-982f-3245896453f0",
+      "name": "Welcome Message",
+      "webhookId": "86104e5f-b1f3-4abf-b0fe-1063150a6b41",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZkoCBOV0fUnVXDRF",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0A7E2LJ7EZ",
+          "mode": "list",
+          "cachedResultName": "all-zakeen"
+        },
+        "text": "=New Employee Joined Company\n\nName: {{ $('Clean Data').item.json.Name }}\nEmail: {{ $('Clean Data').item.json.Email }}\nPhone: {{ $('Clean Data').item.json.Phone }}\nRole: {{ $('Clean Data').item.json.Role }}\nJoining Date: {{ $('Clean Data').item.json['Joining date'] }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        832,
+        1392
+      ],
+      "id": "0f3e8d31-f445-4995-9ba6-bf07e7064cfb",
+      "name": "Alert Mannager",
+      "webhookId": "70b9135c-2af6-4b02-8eec-c087392a12d6",
+      "credentials": {
+        "slackOAuth2Api": {
+          "id": "Uxhptjz8lyuqgQTA",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ZOsQI4bZutOYgyzgx8OpkUEbrnjBXt76exjgVbiDW90",
+          "mode": "list",
+          "cachedResultName": "New Employes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZOsQI4bZutOYgyzgx8OpkUEbrnjBXt76exjgVbiDW90/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZOsQI4bZutOYgyzgx8OpkUEbrnjBXt76exjgVbiDW90/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Clean Data').item.json.Name }}",
+            "Email": "={{ $('Clean Data').item.json.Email }}",
+            "Phone": "={{ $('Clean Data').item.json.Phone }}",
+            "Role": "={{ $('Clean Data').item.json.Role }}",
+            "Joining date": "={{ $('Clean Data').item.json['Joining date'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Role",
+              "displayName": "Role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Joining date",
+              "displayName": "Joining date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        1392
+      ],
+      "id": "3153b08c-5887-4494-a541-827df46c77eb",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FLmCK0EePNj51lDL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Employee Leave form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Employee Name",
+              "placeholder": "John doe"
+            },
+            {
+              "fieldLabel": "Employee Email",
+              "fieldType": "email",
+              "placeholder": "john@gmail.com"
+            },
+            {
+              "fieldLabel": "Leave Type",
+              "placeholder": "Sick , work from home etc"
+            },
+            {
+              "fieldLabel": "Start Date",
+              "fieldType": "date"
+            },
+            {
+              "fieldLabel": "End Date",
+              "fieldType": "date"
+            },
+            {
+              "fieldLabel": "Reason",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -32,
+        1712
+      ],
+      "id": "96b8bc48-c588-4371-a291-6a3bcb6ad4c4",
+      "name": "Leave Form",
+      "webhookId": "b6ac2426-a24f-42fc-929b-65d13f4b7ac1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "660e2d33-a06c-4349-befd-7f09b7410b0b",
+              "name": "Employee Name",
+              "value": "={{ $json['Employee Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a9d500fe-846a-407d-8377-c5ef6ef84d4c",
+              "name": "Employee Email",
+              "value": "={{ $json['Employee Email'] }}",
+              "type": "string"
+            },
+            {
+              "id": "c77dc2d9-4381-42c9-95c2-3c5efa4c8474",
+              "name": "Leave Type",
+              "value": "={{ $json['Leave Type'] }}",
+              "type": "string"
+            },
+            {
+              "id": "41bccb05-0fca-4f38-9780-f4d9dfc74f0f",
+              "name": "Reason",
+              "value": "={{ $json.Reason }}",
+              "type": "string"
+            },
+            {
+              "id": "381ff53e-d772-4732-bf92-dbe62474199b",
+              "name": "Start Date",
+              "value": "={{ $json['Start Date'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a8534404-59e1-4f14-9ad9-bfbb21404eb2",
+              "name": "End Date",
+              "value": "={{ $json['End Date'] }}",
+              "type": "string"
+            },
+            {
+              "id": "f542d31c-3dfe-4cb9-a4c7-e5164d58de99",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        1712
+      ],
+      "id": "8f90f786-7630-4f0e-8541-a0b2a0e11df3",
+      "name": "Clean Data1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c74d513c-efae-4814-a512-d3dd1dca817b",
+              "leftValue": "={{ $json.labelIds[0] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        848,
+        1712
+      ],
+      "id": "1785e10d-2d13-400f-85d4-f6579817657d",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1KYUbs8rqcDhbR6HTXrctDHZtMfKhINsZfHHlXSWX-Us",
+          "mode": "list",
+          "cachedResultName": "Leave Form",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KYUbs8rqcDhbR6HTXrctDHZtMfKhINsZfHHlXSWX-Us/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KYUbs8rqcDhbR6HTXrctDHZtMfKhINsZfHHlXSWX-Us/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Employee Name": "={{ $json['Employee Name'] }}",
+            "Employee Email": "={{ $json['Employee Email'] }}",
+            "Leave Type": "={{ $json['Leave Type'] }}",
+            "Reason": "={{ $json.Reason }}",
+            "Start Date": "={{ $json['Start Date'] }}",
+            "End Date": "={{ $json['End Date'] }}",
+            "Status ": "pending"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Employee Name",
+              "displayName": "Employee Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Employee Email",
+              "displayName": "Employee Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Leave Type",
+              "displayName": "Leave Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Start Date",
+              "displayName": "Start Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "End Date",
+              "displayName": "End Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status ",
+              "displayName": "Status ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        1712
+      ],
+      "id": "286a8143-b660-495e-9d3c-f9decb1553b0",
+      "name": "Employee Leave Data",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FLmCK0EePNj51lDL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "zakeenkhann@gmail.com",
+        "subject": "=Leave Request from  {{ $json['Employee Name'] }}",
+        "emailType": "text",
+        "message": "=Dear Manager,\n\nI hope this message finds you well. A new leave request has been submitted and requires your approval.\n\n─────────────────────────────\n📋 LEAVE REQUEST DETAILS\n─────────────────────────────\nEmployee:    {{ $json['Employee Name'] }}\nEmail:       {{ $json['Employee Email'] }}\nLeave Type:  {{ $json['Leave Type'] }}\nFrom:        {{ $json['Start Date'] }}\nTo:          {{ $json['End Date'] }}\nReason:      {{ $json.Reason }}\n─────────────────────────────\n\nPlease review the request and take action below:\n\n✅ APPROVE REQUEST\nhttps://your-n8n.com/webhook/leave-response?action=approve&id=12345\n\n❌ REJECT REQUEST\nhttps://your-n8n.com/webhook/leave-response?action=reject&id=12345\n\nThis request will auto-expire in 48 hours if no action is taken.\n\nBest regards,\nHR Automation System\nTartu Solutions",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        1712
+      ],
+      "id": "b77ee614-5cd3-4ff3-9be4-3aef80e8a2cb",
+      "name": "Email to manager",
+      "webhookId": "daf25bb6-0921-46be-bfc1-4491f92ef1ba",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZkoCBOV0fUnVXDRF",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1KYUbs8rqcDhbR6HTXrctDHZtMfKhINsZfHHlXSWX-Us",
+          "mode": "list",
+          "cachedResultName": "Leave Form",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KYUbs8rqcDhbR6HTXrctDHZtMfKhINsZfHHlXSWX-Us/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KYUbs8rqcDhbR6HTXrctDHZtMfKhINsZfHHlXSWX-Us/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status ": "Approve"
+          },
+          "matchingColumns": [
+            "Status "
+          ],
+          "schema": [
+            {
+              "id": "Employee Name",
+              "displayName": "Employee Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employee Email",
+              "displayName": "Employee Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Leave Type",
+              "displayName": "Leave Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Start Date",
+              "displayName": "Start Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "End Date",
+              "displayName": "End Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status ",
+              "displayName": "Status ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1200,
+        1616
+      ],
+      "id": "e0ee9974-2661-4b5f-bdc8-0274d90ca2e4",
+      "name": "Status change Approve",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FLmCK0EePNj51lDL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1KYUbs8rqcDhbR6HTXrctDHZtMfKhINsZfHHlXSWX-Us",
+          "mode": "list",
+          "cachedResultName": "Leave Form",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KYUbs8rqcDhbR6HTXrctDHZtMfKhINsZfHHlXSWX-Us/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KYUbs8rqcDhbR6HTXrctDHZtMfKhINsZfHHlXSWX-Us/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status ": "Approve"
+          },
+          "matchingColumns": [
+            "Status "
+          ],
+          "schema": [
+            {
+              "id": "Employee Name",
+              "displayName": "Employee Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employee Email",
+              "displayName": "Employee Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Leave Type",
+              "displayName": "Leave Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Start Date",
+              "displayName": "Start Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "End Date",
+              "displayName": "End Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status ",
+              "displayName": "Status ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1216,
+        1872
+      ],
+      "id": "adccef4a-a716-4137-96c9-ef62052acc6e",
+      "name": "Status change Rejected",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "FLmCK0EePNj51lDL",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Employee Leave Data').item.json['Employee Email'] }}",
+        "subject": "Leave Request Approved",
+        "emailType": "text",
+        "message": "=Hi {{ $('Leave Form').item.json['Employee Name'] }},  \n\nGood news. your leave request has been approved.  \n\nLeave Details: Type: You can leave.\nStart Date: {{ $('Leave Form').item.json['Start Date'] }}\nEnd Date: {{ $('Leave Form').item.json['End Date'] }}\n\nPlease make sure any pending work is managed accordingly before your leave.  \n\nEnjoy your time off.  \n\nBest regards, \nZakeen khan",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1440,
+        1872
+      ],
+      "id": "eed1a0a8-4f8d-4666-a6fa-01e6fafc37d7",
+      "name": "Message to Employee Rejection",
+      "webhookId": "0d267aee-de2c-4584-a4ff-396501506746",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZkoCBOV0fUnVXDRF",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Employee Leave Data').item.json['Employee Email'] }}",
+        "subject": "Leave Request Approved",
+        "emailType": "text",
+        "message": "=Hi {{ $('Leave Form').item.json['Employee Name'] }},  \n\nGood news. your leave request has been approved.  \n\nLeave Details: Type: You can leave.\nStart Date: {{ $('Leave Form').item.json['Start Date'] }}\nEnd Date: {{ $('Leave Form').item.json['End Date'] }}\n\nPlease make sure any pending work is managed accordingly before your leave.  \n\nEnjoy your time off.  \n\nBest regards, \nZakeen khan",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1424,
+        1616
+      ],
+      "id": "b1359118-86af-41cf-a6ee-21a78823aa67",
+      "name": "Message to Employee Approval",
+      "webhookId": "0d267aee-de2c-4584-a4ff-396501506746",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZkoCBOV0fUnVXDRF",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Download resume": {
+      "main": [
+        [
+          {
+            "node": "Convert PDF to JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Resume": {
+      "main": [
+        [
+          {
+            "node": "Download resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert PDF to JSON": {
+      "main": [
+        [
+          {
+            "node": "Clean data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resume Sending": {
+      "main": [
+        [
+          {
+            "node": "Upload Resume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean data": {
+      "main": [
+        [
+          {
+            "node": "Human Resource Manager Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Human Resource Manager Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Human Resource Manager Agent": {
+      "main": [
+        [
+          {
+            "node": "Revieving",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Data Stored",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejection Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Revieving": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Stored": {
+      "main": [
+        [
+          {
+            "node": "Mail send Candicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "shortlisted candicate data": {
+      "main": [
+        [
+          {
+            "node": "Selecting High score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Selecting High score": {
+      "main": [
+        [
+          {
+            "node": "HR Recruitment Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HR Recruitment Team": {
+      "main": [
+        [
+          {
+            "node": "Convert into Email form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert into Email form": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Inform Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "HR Recruitment Team",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Employee Submitted data": {
+      "main": [
+        [
+          {
+            "node": "Clean Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Data": {
+      "main": [
+        [
+          {
+            "node": "Company Rules pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Company Rules pdf": {
+      "main": [
+        [
+          {
+            "node": "Welcome Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Welcome Message": {
+      "main": [
+        [
+          {
+            "node": "Alert Mannager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert Mannager": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leave Form": {
+      "main": [
+        [
+          {
+            "node": "Clean Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Data1": {
+      "main": [
+        [
+          {
+            "node": "Employee Leave Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Employee Leave Data": {
+      "main": [
+        [
+          {
+            "node": "Email to manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email to manager": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Status change Approve",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Status change Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status change Approve": {
+      "main": [
+        [
+          {
+            "node": "Message to Employee Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status change Rejected": {
+      "main": [
+        [
+          {
+            "node": "Message to Employee Rejection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "e6d528f4-485f-49e4-846c-20048d5e37a0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "93986980719730036de7d7451f697b4d0eb23114c39a675fcd89105ebd6e2752"
+  },
+  "id": "XVsZ8E7vDy0Eid10",
+  "tags": []
+}
