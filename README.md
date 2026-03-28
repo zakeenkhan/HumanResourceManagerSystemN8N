@@ -1,4 +1,4 @@
-# Human Resource Manager System
+# Human Resource Manager System N8N
 
 **An intelligent AI-powered HR automation system built with N8N that streamlines recruitment, onboarding, and leave management processes.**
 
