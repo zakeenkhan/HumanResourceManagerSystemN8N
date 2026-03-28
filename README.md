@@ -1,130 +1,112 @@
 # Human Resource Manager System N8N
 
-**An intelligent AI-powered HR automation system built with N8N that streamlines recruitment, onboarding, and leave management processes.**
+**Smart HR automation using N8N - handles hiring, onboarding, and leave requests automatically.**
 
 ---
 
-## 📸 System Screenshots - Complete Visual Overview
+## 📸 All Screenshots
 
-### **Main System Workflow**
-![alt text](FullHRSystem.JPG)
+### **Main System**
+![alt text](HRManagerSystem.JPG)
 ![alt text](OnboardingSystem.JPG)
 ![alt text](ResumeAnalysisHR.JPG)
 ![alt text](InterviewScheduling.JPG)
 ![AgentPrompt](AgentPrompt.JPG)
-*Complete HR Manager System showing all integrated automation processes*
+*Complete HR automation workflow*
+
 ![Data Storage](DataSave.JPG)
-*Candidate data automatically stored and organized*
+*Candidate data stored automatically*
 
 ![Approval Process](Approval.JPG)
-*Manager approval workflow with one-click actions*
-
-![Rejection Handling](Rejection.JPG)
-*Professional rejection email automation*
-### **Resume Analysis & Recruitment**
-![Resume Analysis](Resume Analysis HR.JPG)
-*AI-powered resume screening and candidate evaluation*
-
-![SellectionInterview](SellectionInterview.JPG)
-*Candidate selection and interview scheduling process*
-
-![OnboardingMessage](OnboardingMessage.JPG)
-*Welcome message and onboarding communication*
-*AI agent configuration for resume analysis*
-![LeaveForm](LeaveForm.JPG)
-![DataSave](DataSave.JPG)
-*Automatic data storage in Google Sheets*
-
-![Approval](Approval.JPG)
 *Manager approval workflow*
 
-![Rejection](Rejection.JPG)
-*Professional rejection email automation*
+![Rejection Handling](Rejection.JPG)
+*Automated rejection emails*
 
-### **Interview Scheduling**
-![Interview Scheduling](Interview Scheduling.JPG)
-*Automated interview scheduling workflow*
+### **Recruitment Process**
+![Resume Analysis](Resume Analysis HR.JPG)
+*AI resume screening*
 
-![Google meet appointement](Google meet appointement.JPG)
-*Google Meet integration for interview appointments*
+![SellectionInterview](SellectionInterview.JPG)
+*Interview scheduling*
 
-### **Employee Onboarding**
-![On boarding System](On boarding System.JPG)
-*Complete employee onboarding automation*
+![OnboardingMessage](OnboardingMessage.JPG)
+*Welcome messages*
 
-
-
-### **Leave Management System**
-
-*Employee leave request form*
-
-![leave form data](leave form data.JPG)
-*Leave form data processing and storage*
-
-![sick leave](sick leave.JPG)
-*Sick leave request handling*
-
-## 🚀 Step-by-Step System Explanation
-
-### 1. **Resume Analysis & Recruitment System**
-
-**Workflow Steps:**
-1. **Resume Email Trigger** - System automatically checks Gmail for new resume submissions every minute
-2. **Resume Upload** - Downloads resume attachments and saves them to Google Drive
-3. **PDF Processing** - Converts PDF resumes to text format for AI analysis
-4. **AI Analysis** - Uses Google Gemini AI to analyze resumes and score candidates (0-10 scale)
-5. **Decision Making** - Automatically shortlists candidates with scores ≥6, rejects others
-6. **Data Storage** - Saves candidate information to Google Sheets
-7. **Email Notifications** - Sends acceptance or rejection emails to candidates
-
-**AI Analysis Includes:**
-- Name, Email, Phone extraction
-- Skills and experience assessment
-- Project summary analysis
-- Fit scoring for Software Engineer role
-- Overall resume summary
-
-### 2. **Interview Scheduling System**
-
-**Workflow Steps:**
-1. **Candidate Monitoring** - Watches Google Sheets for new shortlisted candidates
-2. **AI Email Generation** - Creates professional interview invitation emails
-3. **Calendar Integration** - Automatically creates Google Calendar events
-4. **Manager Notification** - Sends Slack notifications to HR team
-5. **Confirmation Emails** - Sends interview details to candidates
-
-### 3. **Employee Onboarding System**
-
-**Workflow Steps:**
-1. **Onboarding Form** - New employees fill welcome form with details
-2. **Data Processing** - Cleans and structures employee information
-3. **Document Delivery** - Sends company rules and policies PDF
-4. **Welcome Email** - Personalized welcome message with onboarding info
-5. **Team Notification** - Alerts team via Slack about new employee
-6. **Database Update** - Adds employee to company records
-
-### 4. **Leave Management System**
-
-**Workflow Steps:**
-1. **Leave Application** - Employees submit leave requests through web form
-2. **Data Recording** - Stores leave requests in Google Sheets with "pending" status
-3. **Manager Notification** - Emails manager with approval/rejection links
-4. **Decision Processing** - Updates status based on manager response
-5. **Employee Notification** - Sends approval/rejection emails to employees
+![LeaveForm](LeaveForm.JPG)
+*Leave request form*
 
 ---
 
-## 💼 Business Benefits & ROI
+## 🚀 How It Works
 
-### **Time Savings**
-- **Resume Screening**: Reduces 2-3 hours per candidate to 5 minutes
-- **Interview Scheduling**: Saves 30 minutes per interview coordination
-- **Leave Processing**: Cuts approval time from days to minutes
-- **Onboarding**: Automates 4+ hours of administrative work
+### **1. Resume Analysis**
+- Gmail gets resume emails
+- AI scores candidates (0-10)
+- Scores ≥6 get shortlisted
+- Auto emails sent to all candidates
 
-### **Cost Reduction**
-- **Reduced HR Staff Hours**: Saves ~40 hours/week of manual work
-- **Email Automation**: Eliminates repetitive communication tasks
+### **2. Interview Scheduling**
+- Watches for new candidates
+- Creates interview emails
+- Adds to Google Calendar
+- Notifies team on Slack
+
+### **3. Employee Onboarding**
+- New hires fill form
+- Gets welcome email + documents
+- Team gets Slack alert
+- Data saved to sheets
+
+### **4. Leave Management**
+- Employees request leave online
+- Manager gets approval email
+- Status updated automatically
+- Employee gets decision email
+
+---
+
+## 💼 Business Benefits
+
+### **Time Saved**
+- Resume screening: 3 hours → 5 minutes
+- Interview scheduling: 30 minutes → automatic
+- Leave requests: Days → minutes
+- Onboarding: 4+ hours → automatic
+
+### **Money Saved**
+- HR staff time: $4,000/month
+- Recruitment fees: $15,000/month
+- Admin costs: $500/month
+- Total savings: ~$21,500/month
+
+### **System Cost**
+- N8N platform: $50/month
+- Google Workspace: $12/month
+- Total cost: ~$100/month
+- **Payback: Less than 1 month**
+
+---
+
+## 🛠️ Technology
+
+- **N8N**: Workflow automation
+- **Google Gemini AI**: Resume analysis
+- **Google Workspace**: Email, Drive, Sheets, Calendar
+- **Slack**: Team notifications
+- **Web Forms**: Data collection
+
+---
+
+## 🎯 Perfect For
+
+- **Small businesses** - No HR staff needed
+- **Growing companies** - Scale hiring efficiently  
+- **HR teams** - Focus on important tasks
+
+---
+
+**This system pays for itself in the first month and keeps saving money every month through automation.**
 - **Paperless Process**: Reduces printing and storage costs
 - **Error Prevention**: Minimizes costly mistakes in data entry
 
