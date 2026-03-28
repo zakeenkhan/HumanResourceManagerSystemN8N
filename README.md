@@ -4,25 +4,61 @@
 
 ---
 
-## 🎯 Complete System Overview
+## 📸 System Screenshots - Complete Visual Overview
 
+### **Main System Workflow**
 ![Full HR System](Full HR System.JPG)
+*Complete HR Manager System showing all integrated automation processes*
 
-*This is the complete HR Manager System workflow showing all integrated processes from resume analysis to employee onboarding and leave management.*
+### **Resume Analysis & Recruitment**
+![Resume Analysis](Resume Analysis HR.JPG)
+*AI-powered resume screening and candidate evaluation*
+
+![SellectionInterview](SellectionInterview.JPG)
+*Candidate selection and interview scheduling process*
+
+![AgentPrompt](AgentPrompt.JPG)
+*AI agent configuration for resume analysis*
+
+### **Interview Scheduling**
+![Interview Scheduling](Interview Scheduling.JPG)
+*Automated interview scheduling workflow*
+
+![Google meet appointement](Google meet appointement.JPG)
+*Google Meet integration for interview appointments*
+
+### **Employee Onboarding**
+![On boarding System](On boarding System.JPG)
+*Complete employee onboarding automation*
+
+![OnboardingMessage](OnboardingMessage.JPG)
+*Welcome message and onboarding communication*
+
+### **Leave Management System**
+![LeaveForm](LeaveForm.JPG)
+*Employee leave request form*
+
+![leave form data](leave form data.JPG)
+*Leave form data processing and storage*
+
+![sick leave](sick leave.JPG)
+*Sick leave request handling*
+
+### **Data Management & Communication**
+![DataSave](DataSave.JPG)
+*Automatic data storage in Google Sheets*
+
+![Approval](Approval.JPG)
+*Manager approval workflow*
+
+![Rejection](Rejection.JPG)
+*Professional rejection email automation*
 
 ---
 
-## 📋 Overview
-
-This HR Manager System is a comprehensive automation solution that handles the complete employee lifecycle from recruitment to onboarding and leave management. The system uses AI to analyze resumes, schedule interviews, manage employee data, and process leave requests automatically.
-
----
-
-## 🚀 How It Works
+## 🚀 Step-by-Step System Explanation
 
 ### 1. **Resume Analysis & Recruitment System**
-
-![Resume Analysis](Resume Analysis HR.JPG)
 
 **Workflow Steps:**
 1. **Resume Email Trigger** - System automatically checks Gmail for new resume submissions every minute
@@ -42,8 +78,6 @@ This HR Manager System is a comprehensive automation solution that handles the c
 
 ### 2. **Interview Scheduling System**
 
-![Interview Scheduling](Interview Scheduling.JPG)
-
 **Workflow Steps:**
 1. **Candidate Monitoring** - Watches Google Sheets for new shortlisted candidates
 2. **AI Email Generation** - Creates professional interview invitation emails
@@ -52,8 +86,6 @@ This HR Manager System is a comprehensive automation solution that handles the c
 5. **Confirmation Emails** - Sends interview details to candidates
 
 ### 3. **Employee Onboarding System**
-
-![Onboarding System](On boarding System.JPG)
 
 **Workflow Steps:**
 1. **Onboarding Form** - New employees fill welcome form with details
@@ -64,8 +96,6 @@ This HR Manager System is a comprehensive automation solution that handles the c
 6. **Database Update** - Adds employee to company records
 
 ### 4. **Leave Management System**
-
-![Leave Form](LeaveForm.JPG)
 
 **Workflow Steps:**
 1. **Leave Application** - Employees submit leave requests through web form
